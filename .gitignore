@@ -41,3 +41,16 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+*.orig
+*.class
+*.jar
+*.tmp
+.settings/
+.project
+.classpath
+bluefinFiles/
+test-output/
+target/
+*.swp
+*.log
+*.log.*
