@@ -1,0 +1,40 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite thread-count="5" verbose="1" name="MetricsTest"
+	skipfailedinvocationcounts="false" junit="false" parallel="false"
+	data-provider-thread-count="1" annotations="JDK" >
+	
+	<listeners>
+	
+	<listener class-name= "com.paypal.test.gops.admin.cilistener.TestRunDataCollectionListner"/>
+	
+	</listeners>
+	
+	<!--Default Parameters and should not be changed-->
+	
+	
+	<parameter name="useLocalRC" value="true" />
+	<parameter name="seleniumport" value="4444" />
+	
+	
+	
+
+	
+
+	<test name="DefaultTestSuiteForLocalRuns" annotations="JDK" parallel="true">
+	
+		<classes>
+		<class name="com.paypal.test.gops.admin.listnertest.Listner3"/>
+		<class name="com.paypal.test.gops.admin.listnertest.ListnerTest"/>
+		<class name="com.paypal.test.gops.admin.listnertest.ListnerTest1"/>
+		<class name="com.paypal.test.gops.admin.listnertest.DataProviderTest"/> 
+
+		
+
+		</classes>
+	
+	</test>	
+		
+
+	
+</suite>
