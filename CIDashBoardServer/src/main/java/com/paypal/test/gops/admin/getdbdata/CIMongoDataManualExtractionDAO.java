@@ -20,7 +20,13 @@ public class CIMongoDataManualExtractionDAO {
 	 * @param args
 	 * 
 	 */
+	
+	private String dbName;
 
+	
+	CIMongoDataManualExtractionDAO(String dbName){
+		this.dbName = dbName;
+	}
 	
 
 	protected List<Document> getLastFiveRunsFailures(MongoClient client, String suiteName
@@ -33,7 +39,7 @@ public class CIMongoDataManualExtractionDAO {
 		List<Document> tmpList = new ArrayList<>();
 		try {
 			
-			final MongoDatabase testRunDB = client.getDatabase("MetricsDB")
+			final MongoDatabase testRunDB = client.getDatabase(dbName)
 					.withReadPreference(ReadPreference.secondary());
 
 			String collectionName = suiteName;
@@ -140,7 +146,7 @@ public class CIMongoDataManualExtractionDAO {
 		int buildId = 0;
 		try {
 
-			final MongoDatabase testRunDB = client.getDatabase("MetricsDB")
+			final MongoDatabase testRunDB = client.getDatabase(dbName)
 					.withReadPreference(ReadPreference.secondary());
 
 			MongoCollection<Document> buildDataDocument = testRunDB
@@ -187,7 +193,7 @@ public class CIMongoDataManualExtractionDAO {
 		
 		List<Document> failureList = new ArrayList<Document>();
 		try{
-			final MongoDatabase testRunDB = client.getDatabase("MetricsDB")
+			final MongoDatabase testRunDB = client.getDatabase(dbName)
 					.withReadPreference(ReadPreference.secondary());
 
 			

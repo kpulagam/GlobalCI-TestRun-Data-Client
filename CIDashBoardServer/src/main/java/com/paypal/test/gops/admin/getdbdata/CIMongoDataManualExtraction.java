@@ -1,9 +1,12 @@
 package com.paypal.test.gops.admin.getdbdata;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 
 import org.bson.Document;
@@ -13,19 +16,26 @@ import com.mongodb.ServerAddress;
 
 public class CIMongoDataManualExtraction {
 
-	final static MongoClientOptions options = MongoClientOptions.builder()
-			.connectionsPerHost(100).build();
-	final static MongoClient client = new MongoClient(new ServerAddress(
-			"10.244.180.225", 27017), options);
-
+	private static MongoClientOptions options;
+	private static MongoClient client;
+	private static int maxConnectionsPerHost;
+	private static String dbIPAddress;
+	private static int dbPortNumber;
+	private static String dbName;
 	/**
 	 * @param args
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-	
-		// TODO Auto-generated method stub
-		CIMongoDataManualExtractionDAO mongoObject = new CIMongoDataManualExtractionDAO();
+		getDBConfigValues();
+		
+		options = MongoClientOptions.builder()
+				.connectionsPerHost(maxConnectionsPerHost).build();
+		client = new MongoClient(new ServerAddress(
+				dbIPAddress, dbPortNumber), options);
+		
+		
+		CIMongoDataManualExtractionDAO mongoObject = new CIMongoDataManualExtractionDAO(dbName);
 		TestRunFIleHandler fileHelper = new TestRunFIleHandler();
 		fileHelper.clearScreen();
 		
@@ -84,6 +94,31 @@ public class CIMongoDataManualExtraction {
 		System.out.println(testRunFile.toURI().toURL());
 		
 
+	}
+	
+	private static void getDBConfigValues(){
+		FileInputStream ip;
+		try {
+			ip = new FileInputStream("src/main/resources/MongoConfig.properties");
+			Properties prop = new Properties();
+			prop.load(ip);
+			maxConnectionsPerHost = Integer.parseInt(prop.get("connectionsLimit").toString());
+			dbIPAddress = prop.get("dbServerIP").toString();
+			dbPortNumber = Integer.parseInt(prop.get("dbPortNumber").toString());
+			dbName = prop.get("dbName").toString();
+		} catch (FileNotFoundException e) {
+			System.out.println("Unable to read data base properties file!");
+			e.printStackTrace();
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (IOException e){
+			System.out.println("Unable to fetch data base configuration");
+			e.printStackTrace();
+			
+		}
+		
+		
+		
 	}
 
 }
