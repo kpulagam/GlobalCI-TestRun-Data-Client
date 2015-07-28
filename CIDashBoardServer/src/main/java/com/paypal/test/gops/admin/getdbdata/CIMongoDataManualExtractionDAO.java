@@ -20,89 +20,123 @@ public class CIMongoDataManualExtractionDAO {
 	 * @param args
 	 * 
 	 */
+	
+	private String dbName;
 
 	
+	CIMongoDataManualExtractionDAO(String dbName){
+		this.dbName = dbName;
+	}
+	
 
-	protected List<Bson> getLastFiveRunsFailures(MongoClient client, String suiteName
+	protected List<Document> getLastFiveRunsFailures(MongoClient client, String suiteName
 			) {
-		List<Bson> list1 = new ArrayList<>();
-		List<Bson> list2 = new ArrayList<>();
-		List<Bson> list3 = new ArrayList<>();
-		List<Bson> list4 = new ArrayList<>();
-		List<Bson> list5 = new ArrayList<>();
-		List<Bson> tmpList = new ArrayList<>();
+		List<Document> list1 = new ArrayList<>();
+		List<Document> list2 = new ArrayList<>();
+		List<Document> list3 = new ArrayList<>();
+		List<Document> list4 = new ArrayList<>();
+		List<Document> list5 = new ArrayList<>();
+		List<Document> tmpList = new ArrayList<>();
 		try {
 			
-			final MongoDatabase testRunDB = client.getDatabase("MetricsDB")
+			final MongoDatabase testRunDB = client.getDatabase(dbName)
 					.withReadPreference(ReadPreference.secondary());
 
 			String collectionName = suiteName;
 			Bson projection = new Document("ClassName", 1).append("_id", 0);
 			int buildNumber = getLatestBuildID(collectionName, client);
-			Bson filter1 = and(eq("BuildNumber", buildNumber),
-					eq("Status", "Failed"));
-			testRunDB.getCollection(collectionName).find(filter1)
-					.projection(projection).into(list1);
+			switch (buildNumber){
+			case 0: throw new RuntimeException();
+			case 5: System.out.println("There are exactly 5 runs for the suite you have entered. Fetcheing the records!"); 
+				break;
+			};
+			
+			if(buildNumber<5){
+				
+				System.out.println("The number of test runs recoreded for the given Suite Name are less than 5!");
+				list1 = null;
+				
+			}
+			else{
+				Bson filter1 = and(eq("BuildNumber", buildNumber),
+						eq("Status", "Failed"));
+				testRunDB.getCollection(collectionName).find(filter1)
+						.projection(projection).into(list1);
 
-			Bson filter2 = and(eq("BuildNumber", buildNumber - 1),
-					eq("Status", "Failed"));
-			testRunDB.getCollection(collectionName).find(filter2)
-					.projection(projection).into(list2);
+				Bson filter2 = and(eq("BuildNumber", buildNumber - 1),
+						eq("Status", "Failed"));
+				testRunDB.getCollection(collectionName).find(filter2)
+						.projection(projection).into(list2);
 
-			Bson filter3 = and(eq("BuildNumber", buildNumber - 2),
-					eq("Status", "Failed"));
-			testRunDB.getCollection(collectionName).find(filter3)
-					.projection(projection).into(list3);
+				Bson filter3 = and(eq("BuildNumber", buildNumber - 2),
+						eq("Status", "Failed"));
+				testRunDB.getCollection(collectionName).find(filter3)
+						.projection(projection).into(list3);
 
-			Bson filter4 = and(eq("BuildNumber", buildNumber - 3),
-					eq("Status", "Failed"));
-			testRunDB.getCollection(collectionName).find(filter4)
-					.projection(projection).into(list4);
+				Bson filter4 = and(eq("BuildNumber", buildNumber - 3),
+						eq("Status", "Failed"));
+				testRunDB.getCollection(collectionName).find(filter4)
+						.projection(projection).into(list4);
 
-			Bson filter5 = and(eq("BuildNumber", buildNumber - 4),
-					eq("Status", "Failed"));
-			testRunDB.getCollection(collectionName).find(filter5)
-					.projection(projection).into(list5);
+				Bson filter5 = and(eq("BuildNumber", buildNumber - 4),
+						eq("Status", "Failed"));
+				testRunDB.getCollection(collectionName).find(filter5)
+						.projection(projection).into(list5);
 
-			for (Bson b : list1) {
-				if (list2.contains(list1.get(0))) {
-					tmpList.add(b);
+				for (Document b : list1) {
+					if (list2.contains(list1.get(0))) {
+						tmpList.add(b);
+
+					}
 
 				}
 
-			}
+				list1.clear();
 
-			list1.clear();
+				for (Document b : tmpList) {
+					if (list3.contains(tmpList.get(0))) {
 
-			for (Bson b : tmpList) {
-				if (list3.contains(tmpList.get(0))) {
-
-					list1.add(b);
+						list1.add(b);
+					}
 				}
-			}
 
-			tmpList.clear();
-			for (Bson b : list1) {
-				if (list4.contains(list1.get(0))) {
+				tmpList.clear();
+				for (Document b : list1) {
+					if (list4.contains(list1.get(0))) {
 
-					tmpList.add(b);
+						tmpList.add(b);
+					}
 				}
-			}
-			list1.clear();
+				list1.clear();
 
-			for (Bson b : tmpList) {
-				if (list5.contains(tmpList.get(0))) {
-					list1.add(b);
+				for (Document b : tmpList) {
+					if (list5.contains(tmpList.get(0))) {
+						list1.add(b);
+					}
 				}
+				
+				
+				
 			}
+				
+			
 			
 
-		} catch (MongoException e) {
+		}
+		catch (MongoException e) {
 			System.out
 					.println("There seems to be an issue with MongoDB connectivity");
 			e.printStackTrace();
-		} catch (Exception e) {
+			list1 = null;
+		}  catch(RuntimeException e){
+			System.out.print("oops, looks like you have entered a wrong suite Name, can not proceed further!");
 			e.printStackTrace();
+			System.exit(0);
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			list1 = null;
 		}
 
 		return list1;
@@ -112,7 +146,7 @@ public class CIMongoDataManualExtractionDAO {
 		int buildId = 0;
 		try {
 
-			final MongoDatabase testRunDB = client.getDatabase("MetricsDB")
+			final MongoDatabase testRunDB = client.getDatabase(dbName)
 					.withReadPreference(ReadPreference.secondary());
 
 			MongoCollection<Document> buildDataDocument = testRunDB
@@ -159,7 +193,7 @@ public class CIMongoDataManualExtractionDAO {
 		
 		List<Document> failureList = new ArrayList<Document>();
 		try{
-			final MongoDatabase testRunDB = client.getDatabase("MetricsDB")
+			final MongoDatabase testRunDB = client.getDatabase(dbName)
 					.withReadPreference(ReadPreference.secondary());
 
 			
