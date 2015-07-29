@@ -22,25 +22,26 @@ public class CIMongoDataManualExtraction {
 	private static String dbIPAddress;
 	private static int dbPortNumber;
 	private static String dbName;
+
 	/**
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
 		getDBConfigValues();
-		
+
 		options = MongoClientOptions.builder()
 				.connectionsPerHost(maxConnectionsPerHost).build();
-		client = new MongoClient(new ServerAddress(
-				dbIPAddress, dbPortNumber), options);
-		
-		
-		CIMongoDataManualExtractionDAO mongoObject = new CIMongoDataManualExtractionDAO(dbName);
+		client = new MongoClient(new ServerAddress(dbIPAddress, dbPortNumber),
+				options);
+
+		CIMongoDataManualExtractionDAO mongoObject = new CIMongoDataManualExtractionDAO(
+				dbName);
 		TestRunFIleHandler fileHelper = new TestRunFIleHandler();
 		fileHelper.clearScreen();
-		
+
 		Scanner input = new Scanner(System.in);
-		
+
 		System.out.println("Enter the suiteName: ");
 		String suiteName = input.nextLine();
 		System.out.println("Are you Looking for last 5 run's failures");
@@ -54,8 +55,8 @@ public class CIMongoDataManualExtraction {
 
 			if (lastFiveRunFailureList != null) {
 
-				String fileHeader = "************" + currentDate.toString()
-						+ "************";
+				String fileHeader = currentDate.toString();
+
 				fileHelper.writeIntoFile(lastFiveRunFailureList, fileHeader,
 						testRunFile);
 
@@ -67,15 +68,25 @@ public class CIMongoDataManualExtraction {
 				|| lastFiveRunFailureList == null) {
 			System.out.println("Are you looking for latest test run failures");
 			String secondDecision = input.nextLine();
+			System.out.println("Are you looking for test failures for a specific build?");
+			String thirdDecision = input.nextLine();
 			if (secondDecision.equalsIgnoreCase("Yes")) {
-				String fileHeader = "************" + currentDate.toString()
-						+ "************";
-				fileHelper.writeIntoFile(
-						mongoObject.getFailuresForBuildId(client, suiteName),
+				String fileHeader = currentDate.toString();
+				fileHelper.writeIntoFile(mongoObject.getFailuresForBuildId(
+						client, suiteName,
+						mongoObject.getLatestBuildID(suiteName, client)),
 						fileHeader, testRunFile);
 
-			} else if (secondDecision.equalsIgnoreCase("No")) {
-				System.out.println("I cannot answer you!");
+			} else if (thirdDecision.equalsIgnoreCase("Yes")) {
+				System.out
+						.println("Enter the build ID for which you need the faulure for: ");
+				String userBuildId = input.nextLine();
+				System.out
+						.println("Getting the results for the given build ID: ");
+				String fileHeader = currentDate.toString();
+				fileHelper.writeIntoFile(mongoObject.getFailuresForBuildId(
+						client, suiteName, Integer.parseInt(userBuildId)),
+						fileHeader, testRunFile);
 			}
 
 			else {
@@ -90,35 +101,36 @@ public class CIMongoDataManualExtraction {
 		input.close();
 
 		client.close();
-		System.out.println("Use the below link to access the file that is generated");
+		System.out
+				.println("Use the below link to access the file that is generated");
 		System.out.println(testRunFile.toURI().toURL());
-		
 
 	}
-	
-	private static void getDBConfigValues(){
+
+	private static void getDBConfigValues() {
 		FileInputStream ip;
 		try {
-			ip = new FileInputStream("src/main/resources/MongoConfig.properties");
+			ip = new FileInputStream(
+					"src/main/resources/MongoConfig.properties");
 			Properties prop = new Properties();
 			prop.load(ip);
-			maxConnectionsPerHost = Integer.parseInt(prop.get("connectionsLimit").toString());
+			maxConnectionsPerHost = Integer.parseInt(prop.get(
+					"connectionsLimit").toString());
 			dbIPAddress = prop.get("dbServerIP").toString();
-			dbPortNumber = Integer.parseInt(prop.get("dbPortNumber").toString());
+			dbPortNumber = Integer
+					.parseInt(prop.get("dbPortNumber").toString());
 			dbName = prop.get("dbName").toString();
 		} catch (FileNotFoundException e) {
 			System.out.println("Unable to read data base properties file!");
 			e.printStackTrace();
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}catch (IOException e){
+		} catch (IOException e) {
 			System.out.println("Unable to fetch data base configuration");
 			e.printStackTrace();
-			
+
 		}
-		
-		
-		
+
 	}
 
 }
