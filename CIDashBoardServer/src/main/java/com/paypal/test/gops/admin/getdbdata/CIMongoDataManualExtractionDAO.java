@@ -142,7 +142,7 @@ public class CIMongoDataManualExtractionDAO {
 		return list1;
 	}
 
-	private synchronized int getLatestBuildID(String suiteName, MongoClient client) {
+	protected synchronized int getLatestBuildID(String suiteName, MongoClient client) {
 		int buildId = 0;
 		try {
 
@@ -189,7 +189,7 @@ public class CIMongoDataManualExtractionDAO {
 
 	}
 	
-	protected List<Document> getFailuresForBuildId(MongoClient client, String collectionName) {
+	protected List<Document> getFailuresForBuildId(MongoClient client, String collectionName, int buildID) {
 		
 		List<Document> failureList = new ArrayList<Document>();
 		try{
@@ -199,7 +199,7 @@ public class CIMongoDataManualExtractionDAO {
 			
 			Bson projection = new Document("ClassName", 1).append("_id", 0);
 
-			Bson filter = and(eq("BuildNumber", getLatestBuildID(collectionName, client)),
+			Bson filter = and(eq("BuildNumber", buildID),
 					eq("Status", "Failed"));
 			testRunDB.getCollection(collectionName).find(filter)
 					.projection(projection).into(failureList);
@@ -218,5 +218,6 @@ public class CIMongoDataManualExtractionDAO {
 		
 
 	}
+	//
 
 }
