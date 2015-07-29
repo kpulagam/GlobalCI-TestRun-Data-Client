@@ -51,16 +51,6 @@
 			<version>2.10.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sparkjava</groupId>
-			<artifactId>spark-core</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>2.3.22</version>
-		</dependency>
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
@@ -113,7 +103,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
+				<version>3.3</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -123,6 +113,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
 				<executions>
 					<execution>
 						<goals>
@@ -132,45 +123,11 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.18</version>
-				<configuration>
-					<!-- Note: includes are ignored if you use a suiteXmlFiles section, 
-						shown below -->
-					<includes>
-						<include>**/*.java</include>
-					</includes>
-
-					<!-- You can specify a specific testng.xml file here <suiteXmlFiles> 
-						<suiteXmlFile>src/test/resources/testng-sample.xml</suiteXmlFile> </suiteXmlFiles> -->
-					<!-- Or dynamically with something like '-DsuiteXmlFile=src/test/resources/testng-sample.xml' -->
-
-					<suiteXmlFiles>
-						<suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
-					</suiteXmlFiles>
-
-
-
-					<!-- Build with '-DskipTests=true' to bypass test execution @ build 
-						time Default: false -->
-					<skipTests>${skipTests}</skipTests>
-					<testFailureIgnore>true</testFailureIgnore>
-					<!-- <properties> -->
-					<!-- <property> -->
-					<!-- <name>listener</name> -->
-					<!-- <value>com.paypal.test.bluefin.reports.reporter.html.BFReporter,com.paypal.test.bluefin.platform.grid.SeleniumCapabilities,com.paypal.test.bluefin.platform.grid.SoftAssertCapabilities</value> -->
-					<!-- </property> -->
-					<!-- </properties> -->
-					<!-- <systemProperties> <property> <name>java.awt.headless</name> <value>true</value> 
-						</property> </systemProperties> -->
-				</configuration>
-			</plugin>
-
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>

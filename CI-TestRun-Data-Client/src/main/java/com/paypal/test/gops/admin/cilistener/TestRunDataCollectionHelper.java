@@ -23,14 +23,15 @@ public class TestRunDataCollectionHelper {
 		int f = 0;
 		boolean hasTestCaseStarted = false;
 		
-
+		
 		String tmpClassName = currentTestRun.getTestMethod().getRealClass()
 				.getName();
+		
 
 		if (setdata == null) {
 			throw new NullPointerException("The object is null");
 		} else {
-
+						
 			if (!setdata.getHasTestRunCompleted()) {
 
 				if (setdata.getAllClassMethodMap().isEmpty()) {
@@ -115,7 +116,7 @@ public class TestRunDataCollectionHelper {
 			}
 
 		}
-
+		
 		for (String className : setdata.getAllClassMethodMap().keySet()) {
 
 			int i = 1;
@@ -155,10 +156,10 @@ public class TestRunDataCollectionHelper {
 		}
 
 		for (String className : setdata.getTestClassResultSet().keySet()) {
-
+			
 			doc = new Document("ClassName", className).append("Status",
 					setdata.getTestClassResultSet().get(className)).append(
-					"Methods", this.setMethodStatus(setdata, className));
+					"Methods", this.setMethodStatus(setdata, className)).append("TestTagName", setdata.getTestClassTagList().get(className));
 			databaseObject.writeIntoDb(doc, className);
 
 		}

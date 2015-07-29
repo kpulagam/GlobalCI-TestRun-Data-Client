@@ -11,6 +11,7 @@ import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.xml.XmlClass;
 
 public class TestRunDataCollectionListner implements ITestListener, ISuiteListener,
 		IInvokedMethodListener {
@@ -30,7 +31,7 @@ public class TestRunDataCollectionListner implements ITestListener, ISuiteListen
 
 	@Override
 	public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-
+		
 		try {
 			testRunDataCollectionHelper.collectCIData(method, testResult, setdata,
 					testClassStatus, doc, databaseObject,log);
@@ -81,7 +82,7 @@ public class TestRunDataCollectionListner implements ITestListener, ISuiteListen
 		log.debug("Info: Test run start time is :"
 				+ setdata.getTestRunStartTime());
 		log.debug("Info: Test run end time is :" + date.toString());
-
+		
 	}
 
 	/**
@@ -92,6 +93,11 @@ public class TestRunDataCollectionListner implements ITestListener, ISuiteListen
 
 	@Override
 	public void onStart(ITestContext arg0) {
+		
+		for(XmlClass c :arg0.getCurrentXmlTest().getClasses()){
+			setdata.setTestClassTagList(c.getName(),arg0.getName());
+		}
+		
 
 	}
 
