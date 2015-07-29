@@ -94,21 +94,25 @@ public class CIMongoDataManualExtraction {
 
 				else {
 					System.out.println("I guess you are entering wrong keys");
+					Thread.sleep(3000);
 				}
 			}
 
 			else {
 				System.out.println("I guess you are entering wrong keys");
+				Thread.sleep(3000);
 			}
 			
 			System.out
 			.println("Use the below link to access the file that is generated");
 			System.out.println(testRunFile.toURI().toURL());
+			Thread.sleep(10000);
 
 			
 		}catch(Exception e){
 			
 			System.out.println("Oops! Some error occured processing your request, Apologies. Please give it a shot again!");
+			Thread.sleep(5000);
 			
 		}
 		
