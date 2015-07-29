@@ -26,6 +26,16 @@
 		<classes>
 		<class name="com.paypal.test.gops.admin.listnertest.Listner3"/>
 		<class name="com.paypal.test.gops.admin.listnertest.ListnerTest"/>
+		
+
+		
+
+		</classes>
+	
+	</test>	
+	<test name="TestTageName" annotations="JDK" parallel="true">
+	
+		<classes>
 		<class name="com.paypal.test.gops.admin.listnertest.ListnerTest1"/>
 		<class name="com.paypal.test.gops.admin.listnertest.DataProviderTest"/> 
 
@@ -34,6 +44,8 @@
 		</classes>
 	
 	</test>	
+	
+	
 		
 
 	
