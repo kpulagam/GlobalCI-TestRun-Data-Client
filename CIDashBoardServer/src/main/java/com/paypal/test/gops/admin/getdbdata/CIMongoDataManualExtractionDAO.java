@@ -3,6 +3,7 @@ package com.paypal.test.gops.admin.getdbdata;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,132 +26,6 @@ public class CIMongoDataManualExtractionDAO {
 
 	CIMongoDataManualExtractionDAO(String dbName) {
 		this.dbName = dbName;
-	}
-
-	protected List<Document> getLastFiveRunsFailures(MongoClient client,
-			String suiteName) {
-		List<Document> list1 = new ArrayList<>();
-		List<Document> list2 = new ArrayList<>();
-		List<Document> list3 = new ArrayList<>();
-		List<Document> list4 = new ArrayList<>();
-		List<Document> list5 = new ArrayList<>();
-		List<Document> tmpList = new ArrayList<>();
-		try {
-
-			final MongoDatabase testRunDB = client.getDatabase(dbName)
-					.withReadPreference(ReadPreference.secondary());
-
-			String collectionName = suiteName;
-			Bson projection = new Document("ClassName", 1).append("_id", 0);
-			int buildNumber = getLatestBuildID(collectionName, client);
-
-			switch (buildNumber) {
-			case 0:
-				throw new RuntimeException();
-			case 5:
-				System.out
-						.println("There are exactly 5 runs for the suite you have entered. Fetcheing the records!");
-				break;
-			}
-			;
-
-			if (buildNumber < 5) {
-
-				System.out
-						.println("The number of test runs recoreded for the given Suite Name are less than 5!");
-				list1 = null;
-
-			} else {
-
-				Bson filter1 = and(eq("BuildNumber", buildNumber),
-						eq("Status", "Failed"));
-				testRunDB.getCollection(collectionName).find(filter1)
-						.projection(projection).into(list1);
-
-				Bson filter2 = and(eq("BuildNumber", buildNumber - 1),
-						eq("Status", "Failed"));
-				testRunDB.getCollection(collectionName).find(filter2)
-						.projection(projection).into(list2);
-
-				Bson filter3 = and(eq("BuildNumber", buildNumber - 2),
-						eq("Status", "Failed"));
-				testRunDB.getCollection(collectionName).find(filter3)
-						.projection(projection).into(list3);
-
-				Bson filter4 = and(eq("BuildNumber", buildNumber - 3),
-						eq("Status", "Failed"));
-				testRunDB.getCollection(collectionName).find(filter4)
-						.projection(projection).into(list4);
-
-				Bson filter5 = and(eq("BuildNumber", buildNumber - 4),
-						eq("Status", "Failed"));
-				testRunDB.getCollection(collectionName).find(filter5)
-						.projection(projection).into(list5);
-
-				for (Document list2Doc : list2) {
-					for (Document list1Doc : list1) {
-						if (list1Doc.get("ClassName").equals(
-								list2Doc.get("ClassName"))) {
-							tmpList.add(list1Doc);
-						}
-
-					}
-
-				}
-				list1.clear();
-
-				for (Document list3Doc : list3) {
-					for (Document tmpListDoc : tmpList) {
-						if (tmpListDoc.get("ClassName").equals(
-								list3Doc.get("ClassName"))) {
-							list1.add(tmpListDoc);
-						}
-					}
-
-				}
-				tmpList.clear();
-
-				for (Document list4Doc : list4) {
-					for (Document list1Doc : list1) {
-						if (list1Doc.get("ClassName").equals(
-								list4Doc.get("ClassName"))) {
-							tmpList.add(list1Doc);
-						}
-					}
-
-				}
-
-				list1.clear();
-
-				for (Document list5Doc : list5) {
-					for (Document tmpListDoc : tmpList) {
-						if (tmpListDoc.get("ClassName").equals(
-								list5Doc.get("ClassName"))) {
-							list1.add(tmpListDoc);
-						}
-					}
-
-				}
-
-			}
-
-		} catch (MongoException e) {
-			System.out
-					.println("There seems to be an issue with MongoDB connectivity");
-			e.printStackTrace();
-			list1 = null;
-		} catch (RuntimeException e) {
-			System.out
-					.print("oops, looks like you have entered a wrong suite Name, can not proceed further!");
-			e.printStackTrace();
-			System.exit(0);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			list1 = null;
-		}
-
-		return list1;
 	}
 
 	protected synchronized int getLatestBuildID(String suiteName,
@@ -200,19 +75,109 @@ public class CIMongoDataManualExtractionDAO {
 
 	}
 
+	//
+
+	protected List<Document> getMultipleRunsFailures(int numberOfRuns,
+			MongoClient client, String suiteName) {
+		List<Document> finalList = new ArrayList<>();
+		if (suiteName.equals(null) || suiteName.equals(""))
+			throw new NullPointerException("You should enter a suite name!");
+		if (numberOfRuns < 1)
+			throw new InvalidParameterException(
+					"The number of test runs that you have entered is less than 1");
+
+		final MongoDatabase testRunDB = client.getDatabase(dbName)
+				.withReadPreference(ReadPreference.secondary());
+
+		Bson projection = new Document("ClassName", 1).append("TestTagName", 1)
+				.append("_id", 0);
+		int buildNumber = getLatestBuildID(suiteName, client);
+
+		if (numberOfRuns > buildNumber) {
+			System.out
+					.println("The number of test runs you have requested are"
+							+ " greater that the testruns recorde, will compare results from all of the runs recorded!");
+			numberOfRuns = buildNumber;
+
+		} else if (numberOfRuns == 1) {
+			List<Document> singleList = new ArrayList<>();
+			Bson oddfilter = and(eq("BuildNumber", 1), eq("Status", "Failed"));
+			testRunDB.getCollection(suiteName).find(oddfilter)
+					.projection(projection).into(singleList);
+			finalList.addAll(singleList);
+
+		} else if (numberOfRuns > 1) {
+			int j = 1;
+			List<Document> evenList = new ArrayList<>();
+			List<Document> oddList = new ArrayList<>();
+
+			while (j < numberOfRuns) {
+
+				Bson oddfilter = and(eq("BuildNumber", buildNumber),
+						eq("Status", "Failed"));
+				testRunDB.getCollection(suiteName).find(oddfilter)
+						.projection(projection).into(oddList);
+				System.err.println("Build Number is: " + buildNumber);
+				if (finalList.isEmpty()) {
+
+					Bson evenfilter = and(eq("BuildNumber", buildNumber--),
+							eq("Status", "Failed"));
+					testRunDB.getCollection(suiteName).find(evenfilter)
+							.projection(projection).into(evenList);
+					System.err.println("Build Number is: " + buildNumber);
+
+				} else {
+					evenList.addAll(finalList);
+					finalList.clear();
+				}
+
+				for (Document evenDoc : evenList) {
+					for (Document oddDoc : oddList) {
+						if (oddDoc.get("ClassName").equals(
+								evenDoc.get("ClassName"))) {
+							finalList.add(oddDoc);
+						}
+
+					}
+
+				}
+
+				j++;
+				buildNumber--;
+
+				oddList.clear();
+				evenList.clear();
+			}
+
+		}
+		
+		else{
+			System.out.println("Looks like you have entered invalid number of test runs to be analysed!");
+		}
+
+		for (Document d : finalList) {
+			System.out.println(d);
+
+		}
+
+		return finalList;
+
+	}
+
 	protected List<Document> getFailuresForBuildId(MongoClient client,
-			String collectionName, int buildID) {
+			String suiteName, int buildID) {
 
 		List<Document> failureList = new ArrayList<Document>();
 		try {
 			final MongoDatabase testRunDB = client.getDatabase(dbName)
 					.withReadPreference(ReadPreference.secondary());
 
-			Bson projection = new Document("ClassName", 1).append("_id", 0);
+			Bson projection = new Document("ClassName", 1).append(
+					"TestTagName", 1).append("_id", 0);
 
 			Bson filter = and(eq("BuildNumber", buildID),
 					eq("Status", "Failed"));
-			testRunDB.getCollection(collectionName).find(filter)
+			testRunDB.getCollection(suiteName).find(filter)
 					.projection(projection).into(failureList);
 
 		} catch (MongoException e) {
@@ -227,6 +192,4 @@ public class CIMongoDataManualExtractionDAO {
 		return failureList;
 
 	}
-	//
-
 }

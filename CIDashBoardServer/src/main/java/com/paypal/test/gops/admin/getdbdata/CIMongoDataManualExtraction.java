@@ -21,106 +21,115 @@ public class CIMongoDataManualExtraction {
 	/**
 	 * @param args
 	 * @throws IOException
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException,
+			InterruptedException {
 		Scanner input = null;
-		
-		try{
-			
+
+		try {
+
 			CIMongoDataManualExtractionDAO mongoObject = new CIMongoDataManualExtractionDAO(
 					"MetricsDB");
 			TestRunFIleHandler fileHelper = new TestRunFIleHandler();
-			fileHelper.clearScreen();
+			//fileHelper.clearScreen();
 
 			input = new Scanner(System.in);
 
 			System.out.println("Enter the suiteName: ");
 			String suiteName = input.nextLine();
-			System.out.println("Are you Looking for last 5 run's failures");
+			System.out
+					.println("Are you Looking for last 5 run's failures Options: 'Yes'or 'No'");
 			String initialDecision = input.nextLine();
-			List<Document> lastFiveRunFailureList = mongoObject
-					.getLastFiveRunsFailures(client, suiteName);
+			List<Document> lastFiveRunFailureList = null;
+
 			Date currentDate = new Date();
 			File testRunFile = fileHelper.createFile();
 
 			if (initialDecision.equalsIgnoreCase("Yes")) {
+				lastFiveRunFailureList = mongoObject.getMultipleRunsFailures(5,
+						client, suiteName);
 
 				if (lastFiveRunFailureList != null) {
 
 					String fileHeader = currentDate.toString();
 
-					fileHelper.writeIntoFile(lastFiveRunFailureList, fileHeader,
-							testRunFile);
+					fileHelper.writeIntoFile(lastFiveRunFailureList,
+							fileHeader, testRunFile);
 
 				}
 
-			}
-
-			else if (initialDecision.equalsIgnoreCase("No")
-					|| lastFiveRunFailureList == null) {
-				System.out.println("Are you looking for latest test run failures");
+			} else {
+				System.out
+						.println("Are you looking for latest test run failures Options: 'Yes'or 'No'");
 				String secondDecision = input.nextLine();
 
 				if (secondDecision.equalsIgnoreCase("Yes")) {
 					String fileHeader = currentDate.toString();
-					fileHelper.writeIntoFile(mongoObject.getFailuresForBuildId(
-							client, suiteName,
-							mongoObject.getLatestBuildID(suiteName, client)),
+					fileHelper.writeIntoFile(mongoObject
+							.getMultipleRunsFailures(1, client, suiteName),
 							fileHeader, testRunFile);
 
 				} else if (secondDecision.equalsIgnoreCase("No")) {
 					System.out
-							.println("Are you looking for test failures for a specific build?");
+							.println("Are you looking for test failures for a specific build? Options: 'Yes'or 'No'");
 					String thirdDecision = input.nextLine();
 					if (thirdDecision.equalsIgnoreCase("Yes")) {
 						System.out
-								.println("Enter the build ID for which you need the faulure for: ");
+								.println("Enter the build ID for which you need the faulure for(Enter Numeric): ");
 						String userBuildId = input.nextLine();
 						System.out
 								.println("Getting the results for the given build ID: ");
 						String fileHeader = currentDate.toString();
-						fileHelper.writeIntoFile(mongoObject.getFailuresForBuildId(
-								client, suiteName, Integer.parseInt(userBuildId)),
+						fileHelper.writeIntoFile(mongoObject
+								.getFailuresForBuildId(client, suiteName,
+										Integer.parseInt(userBuildId)),
 								fileHeader, testRunFile);
 
-					}
-					else{
-						System.out.println("Decide what you want to do and then come Back Again!");
-						Thread.sleep(5000);
+					} else {
+						System.out
+								.println("Do you want failures for more than 5 runs? Options: 'Yes'or 'No'Admin");
+						String finalDecision = input.nextLine();
+						if (finalDecision.equalsIgnoreCase("Yes")) {
+							String fileHeader = currentDate.toString();
+							System.out
+									.println("Please enter the number of test runs to be compared (Enter Numeric):");
+							fileHelper
+									.writeIntoFile(mongoObject
+											.getMultipleRunsFailures(
+													input.nextInt(), client,
+													suiteName), fileHeader,
+											testRunFile);
+
+						} else {
+							System.out
+									.println("You have exhausted all the options! Please initiate again,Good Bye!");
+							Thread.sleep(3000);
+						}
 					}
 
 				}
 
-				else {
-					System.out.println("I guess you are entering wrong keys");
-					Thread.sleep(3000);
-				}
 			}
 
-			else {
-				System.out.println("I guess you are entering wrong keys");
-				Thread.sleep(3000);
-			}
-			
 			System.out
-			.println("Use the below link to access the file that is generated");
+					.println("Use the below link to access the file that is generated");
 			System.out.println(testRunFile.toURI().toURL());
 			Thread.sleep(10000);
 
-			
-		}catch(Exception e){
-			
-			System.out.println("Oops! Some error occured processing your request, Apologies. Please give it a shot again!");
+		} catch (Exception e) {
+
+			System.out
+					.println("Oops! Some error occured processing your request, Apologies. Please give it a shot again!");
+			e.printStackTrace();
 			Thread.sleep(5000);
-			
+
 		}
-		
 
 		input.close();
 
 		client.close();
-		
+
 	}
 
 }

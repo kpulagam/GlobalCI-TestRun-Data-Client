@@ -64,17 +64,17 @@ import com.mongodb.client.model.UpdateOptions;
 					collectionName = collectionName.replace(" ", "");
 				}
 				checkBuildInformation(collectionName);
-				log.info("Collection being used is: "+collectionName);
+				log.debug("Collection being used is: "+collectionName);
 				testRunDataDocument = testRunDB.getCollection(collectionName);	
 							
 			}catch(MongoException e){
 				
-				log.info("Error occurred in Mongo DB connection",e);
+				log.debug("Error occurred in Mongo DB connection",e);
 				testRunDB.drop();
 				client.close();
 			}catch(Exception e){
 				
-				log.info("Encountered generic exception while creating initial document",e);
+				log.debug("Encountered generic exception while creating initial document",e);
 				testRunDB.drop();
 				client.close();
 			}
@@ -93,26 +93,26 @@ import com.mongodb.client.model.UpdateOptions;
 				
 				List<Document> all = testRunDataDocument.find(filter).into(new ArrayList<Document>());
 				
-				log.info(all.size());
+				log.debug(all.size());
 				if(all.size()>0){
 					testRunDataDocument.replaceOne(filter, doc.append("BuildNumber", buildNumber));
 					
-					log.info("Doc Updated");
+					log.debug("Doc Updated");
 				}
 				else{
 					testRunDataDocument.insertOne(doc.append("BuildNumber", buildNumber));
-					log.info("Doc Inserted");
+					log.debug("Doc Inserted");
 					
 				}
 				
 				
 			}catch(MongoException e){
 				
-				log.info("Mongo Error occurred while writing in Mongo DB for class: "+ClassName,e);
+				log.debug("Mongo Error occurred while writing in Mongo DB for class: "+ClassName,e);
 			}
 			catch(Exception e){
 				
-				log.info("Encountered generic exception while writing in Mongo DB for class: "+ClassName,e);
+				log.debug("Encountered generic exception while writing in Mongo DB for class: "+ClassName,e);
 			}
 			
 			
@@ -152,11 +152,11 @@ import com.mongodb.client.model.UpdateOptions;
 			}
 			catch(MongoException e){
 				
-				log.info("Encountered Mongo Error in checking the build Information from buildDataCollection",e);
+				log.debug("Encountered Mongo Error in checking the build Information from buildDataCollection",e);
 			}
 			catch(Exception e){
 				
-				log.info("Encountered generic exception in checking the build Information buildDataCollection",e);
+				log.debug("Encountered generic exception in checking the build Information buildDataCollection",e);
 			}
 		
 		}

@@ -81,47 +81,5 @@ public class CITestRunData {
 		this.testRunEndTime = testRunEndTime;
 	}
 
-	/*
-	 * if (setdata.getClassMethodMap().isEmpty()) { listOfMethods = new
-	 * HashMap<String, String>(); setdata.setClassName(tmpClassName);
-	 * listOfMethods.put(currentTestRun.getTestMethod() .getMethodName(),
-	 * Integer.toString(testResult .getStatus()));
-	 * 
-	 * setdata.setClassMethodMap(setdata.getClassName(), listOfMethods); } else
-	 * if (setdata.getClassName() == tmpClassName &&
-	 * !setdata.getClassMethodMap().containsKey( tmpClassName)) {
-	 * listOfMethods.put(currentTestRun.getTestMethod() .getMethodName(),
-	 * Integer.toString(testResult .getStatus()));
-	 * 
-	 * setdata.setClassMethodMap(tmpClassName, listOfMethods); } else if
-	 * (setdata.getClassName() == tmpClassName && setdata.getClassMethodMap()
-	 * .containsKey(tmpClassName)) { listOfMethods = new HashMap<String,
-	 * String>(); listOfMethods = setdata.getClassMethodMap().get(
-	 * tmpClassName); listOfMethods.put(currentTestRun.getTestMethod()
-	 * .getMethodName(), Integer.toString(testResult .getStatus()));
-	 * 
-	 * setdata.setClassMethodMap(tmpClassName, listOfMethods); } else if
-	 * (setdata.getClassName() != tmpClassName && setdata.getClassMethodMap()
-	 * .containsKey(tmpClassName)) { listOfMethods = new HashMap<String,
-	 * String>(); listOfMethods = setdata.getClassMethodMap().get(
-	 * tmpClassName); listOfMethods.put(currentTestRun.getTestMethod()
-	 * .getMethodName(), Integer.toString(testResult .getStatus()));
-	 * 
-	 * setdata.setClassMethodMap(tmpClassName, listOfMethods); } else if
-	 * (setdata.getClassName() != tmpClassName &&
-	 * !setdata.getClassMethodMap().containsKey( tmpClassName)) { listOfMethods
-	 * = new HashMap<String, String>(); setdata.setClassName(tmpClassName);
-	 * listOfMethods.put(currentTestRun.getTestMethod() .getMethodName(),
-	 * Integer.toString(testResult .getStatus()));
-	 * 
-	 * setdata.setClassMethodMap(tmpClassName, listOfMethods); }
-	 * 
-	 * 
-	 * for(String className : setdata.getAllClassMethodMap().keySet()){
-	 * System.out.println("ClassName: "+className); for(Entry<String, Integer>
-	 * method1: setdata.getAllClassMethodMap().get(className).entrySet()){
-	 * System.out.println(method1.getKey());
-	 * System.out.println(method1.getValue()) ; } }
-	 */
 
 }

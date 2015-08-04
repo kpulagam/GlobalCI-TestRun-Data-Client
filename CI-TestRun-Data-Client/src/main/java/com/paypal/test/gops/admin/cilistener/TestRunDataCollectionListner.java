@@ -13,6 +13,8 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.xml.XmlClass;
 
+import com.mongodb.MongoException;
+
 public class TestRunDataCollectionListner implements ITestListener, ISuiteListener,
 		IInvokedMethodListener {
 
@@ -57,7 +59,7 @@ public class TestRunDataCollectionListner implements ITestListener, ISuiteListen
 
 			Date date = new Date();
 			setdata = new CITestRunData();
-			System.out.println("I am In started");
+			log.debug("Started collecting test run data");
 
 			setdata.setHasTestRunCompleted(false);
 			setdata.setSuiteName(suite.getName());
@@ -75,13 +77,29 @@ public class TestRunDataCollectionListner implements ITestListener, ISuiteListen
 
 	@Override
 	public void onFinish(ISuite suite) {
-		Date date = new Date();
-		setdata.setHasTestRunCompleted(true);
-		databaseObject.completeTest(setdata.getSuiteName());
-		log.debug("Info: Suite name is :" + setdata.getSuiteName());
-		log.debug("Info: Test run start time is :"
-				+ setdata.getTestRunStartTime());
-		log.debug("Info: Test run end time is :" + date.toString());
+		
+		try{
+			Date date = new Date();
+			setdata.setHasTestRunCompleted(true);
+			databaseObject.completeTest(setdata.getSuiteName());
+			log.debug("Info: Suite name is :" + setdata.getSuiteName());
+			log.debug("Info: Test run start time is :"
+					+ setdata.getTestRunStartTime());
+			log.debug("Info: Test run end time is :" + date.toString());
+			databaseObject.client.close();
+			log.debug("DB connection closed");
+			
+		}catch(MongoException e){
+			log.fatal("Error Occured with Data Base ");
+			log.fatal(e);
+			
+			
+		}catch(Exception e){
+			log.fatal("Some Error Occured with Data Base ");
+			log.fatal(e);
+		}
+		
+		
 		
 	}
 
@@ -94,9 +112,18 @@ public class TestRunDataCollectionListner implements ITestListener, ISuiteListen
 	@Override
 	public void onStart(ITestContext arg0) {
 		
-		for(XmlClass c :arg0.getCurrentXmlTest().getClasses()){
-			setdata.setTestClassTagList(c.getName(),arg0.getName());
+		try{
+			for(XmlClass c :arg0.getCurrentXmlTest().getClasses()){
+				setdata.setTestClassTagList(c.getName(),arg0.getName());
+			}
+			
+		}catch(Exception e){
+			log.debug("Error occured while creating test tag and class list");
+			log.fatal(e);
+			
 		}
+		
+		
 		
 
 	}
