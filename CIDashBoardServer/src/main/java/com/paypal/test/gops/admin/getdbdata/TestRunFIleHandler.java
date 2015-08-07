@@ -14,7 +14,7 @@ import org.bson.Document;
 public class TestRunFIleHandler {
 
 	protected void writeIntoFile(List<Document> newList, String fileHeader,
-			File testRunFile) {
+			File testRunFile, String suiteName) {
 
 		try {
 			Collections.sort(newList, new MyListComp());
@@ -22,6 +22,7 @@ public class TestRunFIleHandler {
 			List<String> tmpList = new ArrayList<String>();
 
 			String testTagname = newList.get(0).getString("TestTagName");
+			tmpList.add("Suite Name Is: "+suiteName);
 			tmpList.add("*************Test with Tag Name: " + testTagname
 					+ "************");
 			tmpList.add("\n");
@@ -41,15 +42,18 @@ public class TestRunFIleHandler {
 			FileUtils.writeLines(testRunFile, tmpList);
 			FileUtils.writeStringToFile(testRunFile, fileHeader, true);
 
-		}catch(NullPointerException e){
-			System.out.println("Looks Like Test Tag ius not present ofr few test runs recorded!");
+		} catch (NullPointerException e) {
+			System.out
+					.println("Looks Like Test Tag is not present for few test runs recorded!");
 			e.printStackTrace();
-			
-		}
-		catch (FileNotFoundException e) {
+
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -87,11 +91,9 @@ class MyListComp implements Comparator<Document> {
 
 	@Override
 	public int compare(Document d1, Document d2) {
-		if (d1.get("TestTagName").equals(d2.get("TestTagName"))) {
 
-			return 1;
-		} else {
-			return -1;
-		}
+		return d1.get("TestTagName").toString()
+				.compareTo(d2.get("TestTagName").toString());
+
 	}
 }

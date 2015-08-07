@@ -75,7 +75,7 @@ public class CIMongoDataManualExtractionDAO {
 
 	}
 
-	//
+
 
 	protected List<Document> getMultipleRunsFailures(int numberOfRuns,
 			MongoClient client, String suiteName) {
@@ -99,7 +99,9 @@ public class CIMongoDataManualExtractionDAO {
 							+ " greater that the testruns recorde, will compare results from all of the runs recorded!");
 			numberOfRuns = buildNumber;
 
-		} else if (numberOfRuns == 1) {
+		}
+
+		if (numberOfRuns == 1) {
 			List<Document> singleList = new ArrayList<>();
 			Bson oddfilter = and(eq("BuildNumber", 1), eq("Status", "Failed"));
 			testRunDB.getCollection(suiteName).find(oddfilter)
@@ -117,14 +119,13 @@ public class CIMongoDataManualExtractionDAO {
 						eq("Status", "Failed"));
 				testRunDB.getCollection(suiteName).find(oddfilter)
 						.projection(projection).into(oddList);
-				System.err.println("Build Number is: " + buildNumber);
+
 				if (finalList.isEmpty()) {
 
 					Bson evenfilter = and(eq("BuildNumber", buildNumber--),
 							eq("Status", "Failed"));
 					testRunDB.getCollection(suiteName).find(evenfilter)
 							.projection(projection).into(evenList);
-					System.err.println("Build Number is: " + buildNumber);
 
 				} else {
 					evenList.addAll(finalList);
@@ -150,14 +151,10 @@ public class CIMongoDataManualExtractionDAO {
 			}
 
 		}
-		
-		else{
-			System.out.println("Looks like you have entered invalid number of test runs to be analysed!");
-		}
 
-		for (Document d : finalList) {
-			System.out.println(d);
-
+		else {
+			System.out
+					.println("Looks like you have entered invalid number of test runs to be analysed!");
 		}
 
 		return finalList;

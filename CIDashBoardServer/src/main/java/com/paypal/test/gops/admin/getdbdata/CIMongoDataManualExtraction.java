@@ -55,7 +55,7 @@ public class CIMongoDataManualExtraction {
 					String fileHeader = currentDate.toString();
 
 					fileHelper.writeIntoFile(lastFiveRunFailureList,
-							fileHeader, testRunFile);
+							fileHeader, testRunFile,suiteName);
 
 				}
 
@@ -67,8 +67,8 @@ public class CIMongoDataManualExtraction {
 				if (secondDecision.equalsIgnoreCase("Yes")) {
 					String fileHeader = currentDate.toString();
 					fileHelper.writeIntoFile(mongoObject
-							.getMultipleRunsFailures(1, client, suiteName),
-							fileHeader, testRunFile);
+							.getFailuresForBuildId(client, suiteName,mongoObject.getLatestBuildID(suiteName, client)),
+							fileHeader, testRunFile,suiteName);
 
 				} else if (secondDecision.equalsIgnoreCase("No")) {
 					System.out
@@ -84,11 +84,11 @@ public class CIMongoDataManualExtraction {
 						fileHelper.writeIntoFile(mongoObject
 								.getFailuresForBuildId(client, suiteName,
 										Integer.parseInt(userBuildId)),
-								fileHeader, testRunFile);
+								fileHeader, testRunFile,suiteName);
 
 					} else {
 						System.out
-								.println("Do you want failures for more than 5 runs? Options: 'Yes'or 'No'Admin");
+								.println("Do you want failures for more than 5 runs? Options: 'Yes'or 'No'");
 						String finalDecision = input.nextLine();
 						if (finalDecision.equalsIgnoreCase("Yes")) {
 							String fileHeader = currentDate.toString();
@@ -99,7 +99,7 @@ public class CIMongoDataManualExtraction {
 											.getMultipleRunsFailures(
 													input.nextInt(), client,
 													suiteName), fileHeader,
-											testRunFile);
+											testRunFile,suiteName);
 
 						} else {
 							System.out
