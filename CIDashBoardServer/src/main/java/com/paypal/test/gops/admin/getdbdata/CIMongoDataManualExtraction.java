@@ -32,7 +32,7 @@ public class CIMongoDataManualExtraction {
 			CIMongoDataManualExtractionDAO mongoObject = new CIMongoDataManualExtractionDAO(
 					"MetricsDB");
 			TestRunFIleHandler fileHelper = new TestRunFIleHandler();
-			//fileHelper.clearScreen();
+			fileHelper.clearScreen();
 
 			input = new Scanner(System.in);
 
@@ -55,7 +55,7 @@ public class CIMongoDataManualExtraction {
 					String fileHeader = currentDate.toString();
 
 					fileHelper.writeIntoFile(lastFiveRunFailureList,
-							fileHeader, testRunFile,suiteName);
+							fileHeader, testRunFile, suiteName);
 
 				}
 
@@ -66,9 +66,10 @@ public class CIMongoDataManualExtraction {
 
 				if (secondDecision.equalsIgnoreCase("Yes")) {
 					String fileHeader = currentDate.toString();
-					fileHelper.writeIntoFile(mongoObject
-							.getFailuresForBuildId(client, suiteName,mongoObject.getLatestBuildID(suiteName, client)),
-							fileHeader, testRunFile,suiteName);
+					fileHelper.writeIntoFile(mongoObject.getFailuresForBuildId(
+							client, suiteName,
+							mongoObject.getLatestBuildID(suiteName, client)),
+							fileHeader, testRunFile, suiteName);
 
 				} else if (secondDecision.equalsIgnoreCase("No")) {
 					System.out
@@ -84,7 +85,7 @@ public class CIMongoDataManualExtraction {
 						fileHelper.writeIntoFile(mongoObject
 								.getFailuresForBuildId(client, suiteName,
 										Integer.parseInt(userBuildId)),
-								fileHeader, testRunFile,suiteName);
+								fileHeader, testRunFile, suiteName);
 
 					} else {
 						System.out
@@ -99,7 +100,7 @@ public class CIMongoDataManualExtraction {
 											.getMultipleRunsFailures(
 													input.nextInt(), client,
 													suiteName), fileHeader,
-											testRunFile,suiteName);
+											testRunFile, suiteName);
 
 						} else {
 							System.out

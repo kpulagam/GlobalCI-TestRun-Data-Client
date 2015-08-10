@@ -75,8 +75,6 @@ public class CIMongoDataManualExtractionDAO {
 
 	}
 
-
-
 	protected List<Document> getMultipleRunsFailures(int numberOfRuns,
 			MongoClient client, String suiteName) {
 		List<Document> finalList = new ArrayList<>();
@@ -96,7 +94,7 @@ public class CIMongoDataManualExtractionDAO {
 		if (numberOfRuns > buildNumber) {
 			System.out
 					.println("The number of test runs you have requested are"
-							+ " greater that the testruns recorde, will compare results from all of the runs recorded!");
+							+ " greater that the testruns recorded, will compare results from all of the runs recorded!");
 			numberOfRuns = buildNumber;
 
 		}
@@ -108,7 +106,9 @@ public class CIMongoDataManualExtractionDAO {
 					.projection(projection).into(singleList);
 			finalList.addAll(singleList);
 
-		} else if (numberOfRuns > 1) {
+		}
+
+		else if (numberOfRuns > 1) {
 			int j = 1;
 			List<Document> evenList = new ArrayList<>();
 			List<Document> oddList = new ArrayList<>();
@@ -121,8 +121,9 @@ public class CIMongoDataManualExtractionDAO {
 						.projection(projection).into(oddList);
 
 				if (finalList.isEmpty()) {
+					
 
-					Bson evenfilter = and(eq("BuildNumber", buildNumber--),
+					Bson evenfilter = and(eq("BuildNumber", --buildNumber),
 							eq("Status", "Failed"));
 					testRunDB.getCollection(suiteName).find(evenfilter)
 							.projection(projection).into(evenList);
@@ -130,13 +131,14 @@ public class CIMongoDataManualExtractionDAO {
 				} else {
 					evenList.addAll(finalList);
 					finalList.clear();
+
 				}
 
-				for (Document evenDoc : evenList) {
-					for (Document oddDoc : oddList) {
-						if (oddDoc.get("ClassName").equals(
-								evenDoc.get("ClassName"))) {
-							finalList.add(oddDoc);
+				for (Document oddDoc : oddList) {
+					for (Document evenDoc : evenList) {
+						if (evenDoc.get("ClassName").equals(
+								oddDoc.get("ClassName"))) {
+							finalList.add(evenDoc);
 						}
 
 					}
