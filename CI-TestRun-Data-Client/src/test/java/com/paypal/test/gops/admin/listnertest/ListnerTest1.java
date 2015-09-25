@@ -1,5 +1,6 @@
 package com.paypal.test.gops.admin.listnertest;
 
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -14,7 +15,7 @@ public class ListnerTest1 {
 	@Test
 	public void ListnerTest11(){
 	
-	
+		Assert.assertTrue(false);
 		
 	}
 	@Test

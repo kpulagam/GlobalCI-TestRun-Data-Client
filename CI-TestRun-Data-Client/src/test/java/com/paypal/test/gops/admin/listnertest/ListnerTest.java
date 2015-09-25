@@ -20,13 +20,13 @@ public class ListnerTest {
 	public void firstMethod() throws InterruptedException{
 	
 		
-		//Thread.sleep(10000);
+	
 		
 	}
 	@Test
 	public void secondMethod() throws InterruptedException{
 		
-		//Thread.sleep(40000);
+	
 		Assert.assertTrue(false);
 		
 
@@ -34,9 +34,11 @@ public class ListnerTest {
 		
 	}
 	
-	@Test
+	@Test()
 	public void ListnerTest3()
+	
 	{
+		Assert.assertTrue(false);
 		
 	}
 	

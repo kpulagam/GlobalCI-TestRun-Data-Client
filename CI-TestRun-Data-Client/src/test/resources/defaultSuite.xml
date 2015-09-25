@@ -1,12 +1,12 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite thread-count="5" verbose="1" name="MetricsTest"
+<suite thread-count="1" verbose="1" name="MetricsTest"
 	skipfailedinvocationcounts="false" junit="false" parallel="false"
 	data-provider-thread-count="1" annotations="JDK" >
 	
 	<listeners>
 	
-	<listener class-name= "com.paypal.test.gops.admin.cilistener.TestRunDataCollectionListner"/>
+	<listener class-name= "com.paypal.test.gops.admin.cilistener.listner.TestRunDataCollectionListner"/>
 	
 	</listeners>
 	
@@ -21,11 +21,11 @@
 
 	
 
-	<test name="DefaultTestSuiteForLocalRuns" annotations="JDK" parallel="true">
+	<test name="DefaultTestSuiteForLocalRuns" annotations="JDK" parallel="false" preserve-order="true">
 	
 		<classes>
 		<class name="com.paypal.test.gops.admin.listnertest.Listner3"/>
-		<class name="com.paypal.test.gops.admin.listnertest.ListnerTest"/>
+		 <class name="com.paypal.test.gops.admin.listnertest.ListnerTest"/>
 		
 
 		
@@ -33,7 +33,7 @@
 		</classes>
 	
 	</test>	
-	<test name="TestTageName" annotations="JDK" parallel="true">
+	<!--  <test name="TestTageName" annotations="JDK" parallel="false">
 	
 		<classes>
 		<class name="com.paypal.test.gops.admin.listnertest.ListnerTest1"/>
@@ -43,7 +43,7 @@
 
 		</classes>
 	
-	</test>	
+	</test>	-->
 	
 	
 		
